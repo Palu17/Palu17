@@ -26,19 +26,15 @@ class GestoreMappa {
     }
   
     caricaDati(tabella) {
-      // Calcola le dimensioni della mappa una sola volta
       this._cache.dimensioniMappa = this._calcolaDimensioniMappa(tabella);
       const { minX, maxX, minY, maxY, scaleFactor, offsetX, offsetY, raggio } = this._cache.dimensioniMappa;
 
-      // Prepara i dati per il sovraffollamento
       const sovraffollamenti = tabella.getColumn('sovraffollamento').map(Number);
       const maxSovraffollamento = Math.max(...sovraffollamenti);
       const minSovraffollamento = Math.min(...sovraffollamenti);
       
-      // Mappa per contare gli esagoni per regione
       let contatoreRegioni = new Map();
       
-      // Crea gli esagoni
       for (let riga of tabella.rows) {
           const esagono = this._creaEsagono(riga, {
               minX, maxX, minY, maxY, 
@@ -50,17 +46,14 @@ class GestoreMappa {
           
           this.esagoni.push(esagono);
           
-          // Aggiorna la cache degli esagoni per regione
           if (!this._cache.esagoniPerRegione.has(esagono.regione)) {
               this._cache.esagoniPerRegione.set(esagono.regione, []);
           }
           this._cache.esagoniPerRegione.get(esagono.regione).push(esagono);
       }
 
-      // Calcola e cache i centri delle regioni
       this._calcolaCentriRegioni();
       
-      // Passa gli esagoni al GestoreTesto
       this.gestoreTesto.setEsagoni(this.esagoni);
     }
   
@@ -111,7 +104,6 @@ class GestoreMappa {
       let spazio = parseFloat(riga.get('spazio').replace(',', '.'));
       let hexId = riga.get('hexagon_id');
       
-      // Incrementa il contatore per questa regione
       if (!contatoreRegioni.has(regione)) {
           contatoreRegioni.set(regione, 1);
       } else {
@@ -156,29 +148,25 @@ class GestoreMappa {
   
     calcolaColore(sovraffollamento, min, max) {
         if (sovraffollamento <= 100) {
-            // Da bianco a giallo (0-100%)
             return lerpColor(
                 color(this.CONFIG.colori.esagonoBase),
                 color(this.CONFIG.colori.esagonoMedio),
                 map(sovraffollamento, 0, 100, 0, 1)
             );
         } else if (sovraffollamento <= 150) {
-            // Da giallo a rosso (100-150%)
             return lerpColor(
                 color(this.CONFIG.colori.esagonoMedio),
                 color(this.CONFIG.colori.esagonoAlto),
                 map(sovraffollamento, 100, 150, 0, 1)
             );
         } else {
-            // Oltre 150% resta rosso
             return color(this.CONFIG.colori.esagonoAlto);
         }
     }
   
     aggiorna() {
-        // Aggiorna il fade in
         if (this.fadeInProgress < 1) {
-            this.fadeInProgress = min(this.fadeInProgress + 0.01, 400);
+            this.fadeInProgress = min(this.fadeInProgress + 0.0083, 1);
         }
 
         let nuovaRegioneHover = null;
@@ -201,7 +189,6 @@ class GestoreMappa {
         for (let esagono of this.esagoni) {
             esagono.aggiorna();
             this.aggiornaStatoEsagono(esagono);
-            // Aggiorna la scala con una transizione fluida
             if (esagono.scaleMultiplier !== esagono.targetScale) {
                 esagono.scaleMultiplier = lerp(esagono.scaleMultiplier, esagono.targetScale, 0.1);
             }
@@ -238,7 +225,7 @@ class GestoreMappa {
   
         let targetHoverState = 0;
         if (this.regioneSelezionata) {
-            targetHoverState = this.regioneHover === esagono ? 1 : 0;
+            targetHoverState = (this.regioneHover === esagono || this.esagonoCliccato === esagono) ? 1 : 0;
         } else {
             targetHoverState = esagono.regione === this.regioneHover ? 1 : 0;
         }
@@ -246,7 +233,11 @@ class GestoreMappa {
   
         let targetOpacita = 255;
         if (this.regioneSelezionata) {
-            targetOpacita = esagono.regione === this.regioneSelezionata ? 255 : 30;
+            if (this.esagonoCliccato === esagono) {
+                targetOpacita = 255;
+            } else {
+                targetOpacita = esagono.regione === this.regioneSelezionata ? 255 : 30;
+            }
         } else if (this.regioneHover) {
             targetOpacita = esagono.regione === this.regioneHover ? 255 : 100;
         }
@@ -278,7 +269,6 @@ class GestoreMappa {
     }
 
     _gestisciClickRegione(mouseX, mouseY) {
-        // Click sulla mini-Italia
         let italiaCliccata = this.esagoni.some(esagono => {
             if (esagono.regione !== this.regioneSelezionata) {
                 let distanza = dist(mouseX, mouseY, esagono.x, esagono.y);
@@ -292,7 +282,6 @@ class GestoreMappa {
             return;
         }
 
-        // Click su un esagono della regione
         for (let esagono of this.esagoni) {
             if (esagono.regione === this.regioneSelezionata) {
                 let distanza = dist(mouseX, mouseY, esagono.x, esagono.y);
@@ -312,16 +301,19 @@ class GestoreMappa {
 
     _gestisciClickCella(mouseX, mouseY) {
         if (this.gestoreEsagoni.esagonoIngrandito) {
-            let esagono = this.gestoreEsagoni.esagonoIngrandito;
-            let distanza = dist(mouseX, mouseY, esagono.x, esagono.y);
-            let raggioEffettivo = esagono.raggio * esagono.scaleMultiplier;
+            let regioneEsagoni = this.getEsagoniRegione(this.regioneSelezionata);
             
-            if (distanza < raggioEffettivo * 1.5) {
-                this.stato = StatoMappa.REGIONE;
-                this.gestoreEsagoni.gestisciClickEsagonoRegione(esagono);
-                this.esagonoCliccato = null;
-                this.cellaHover = null;
-                this.gestoreTesto.resetStatoCompleto();
+            for (let esagono of regioneEsagoni) {
+                let distanza = dist(mouseX, mouseY, esagono.x, esagono.y);
+                let raggioEffettivo = esagono.raggio * esagono.scaleMultiplier;
+                
+                if (distanza < raggioEffettivo * 1.5) {
+                    this.stato = StatoMappa.REGIONE;
+                    this.gestoreEsagoni.gestisciClickEsagonoRegione(this.gestoreEsagoni.esagonoIngrandito);
+                    this.cellaHover = null;
+                    this.gestoreTesto.resetStatoCompleto();
+                    return;
+                }
             }
         }
     }
@@ -354,7 +346,7 @@ class GestoreMappa {
         });
         
         this.esagoni.filter(e => e.regione !== this.regioneSelezionata).forEach(hex => {
-            hex.targetX = hex.originalX * 0.3 + width * 0.1;
+            hex.targetX = hex.originalX * 0.3 + width * -0.01;
             hex.targetY = hex.originalY * 0.3 + height * 0.35;
             hex.targetScale = 0.3;
             hex.disattivaAnimazione();
@@ -377,7 +369,6 @@ class GestoreMappa {
     }
 
     disegna() {
-        // Prima disegna gli esagoni non in hover
         for (let esagono of this.esagoni) {
             if ((esagono.regione !== this.regioneHover && esagono !== this.cellaHover) || 
                 !this.hoverAttivo) {
@@ -385,7 +376,6 @@ class GestoreMappa {
             }
         }
 
-        // Poi disegna gli esagoni in hover
         for (let esagono of this.esagoni) {
             if ((esagono.regione === this.regioneHover || esagono === this.cellaHover) && 
                 this.hoverAttivo) {
@@ -393,12 +383,15 @@ class GestoreMappa {
             }
         }
 
-        // Disegna il testo
         this.gestoreTesto.disegna();
     }
 
     trovaCellaHover() {
-        if (!this.regioneSelezionata || !this.gestoreEsagoni.esagonoIngrandito) {
+        if (this.gestoreEsagoni.esagonoIngrandito) {
+            return this.gestoreEsagoni.esagonoIngrandito;
+        }
+
+        if (!this.regioneSelezionata) {
             return null;
         }
 
@@ -406,7 +399,8 @@ class GestoreMappa {
         
         for (let esagono of regioneEsagoni) {
             let distanza = dist(mouseX, mouseY, esagono.x, esagono.y);
-            let raggioEffettivo = esagono.raggio * esagono.scaleMultiplier * 1.5;
+            let areaHover = esagono.scaleMultiplier > 1.5 ? 20.0 : 1.5;
+            let raggioEffettivo = esagono.raggio * esagono.scaleMultiplier * areaHover;
             
             if (distanza < raggioEffettivo) {
                 return esagono;

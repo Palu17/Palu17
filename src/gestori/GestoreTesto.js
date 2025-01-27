@@ -56,6 +56,7 @@ class GestoreTestoRegione extends GestoreTestoBase {
         this.descrizione = "";
         this.testoFormattato = [];
         this.indiceCarattereCorrente = 0;
+        this.attesaCompletata = false;
     }
 
     formattaTesto(testo, maxWidth) {
@@ -181,53 +182,97 @@ class GestoreTestoRegione extends GestoreTestoBase {
         this.indiceCarattereCorrente = 0;
     }
 }
-
 class GestoreTestoCarcere extends GestoreTestoBase {
     constructor(gestoreAnimazioni, datiCarceri) {
         super(gestoreAnimazioni);
         this.datiCarceri = datiCarceri;
         this.esagonoCliccato = null;
+        this.ultimoEsagonoSelezionato = null;
+        this.nuovoTestoInAttesa = null;
+        this.testoCompletato = false;
+        this.indiceCarattereCorrente = 0;
     }
 
     aggiorna(regioneSelezionata, esagonoSelezionato) {
         if (!regioneSelezionata || !esagonoSelezionato) {
-            return "";
+            this.esagonoCliccato = null;
+            this.ultimoEsagonoSelezionato = null;
+            this.nuovoTestoInAttesa = null;
+            this.testoCompletato = false;
+            this.indiceCarattereCorrente = 0;
+            return this.aggiornaTesto("");
         }
 
-        if (this.esagonoCliccato?.scaleMultiplier > 1.5) {
-            // Mantieni il testo dell'esagono cliccato, ignora completamente l'hover
-            return this.stato.testo;
+        if (esagonoSelezionato?.scaleMultiplier > 1.5) {
+            if (!this.esagonoCliccato) {
+                const regioneNormalizzata = regioneSelezionata.replace(/ /g, '_').replace(/'/g, '_');
+                const hexId = `${regioneNormalizzata}_hex_${esagonoSelezionato.id}`;
+                const datiCarcere = this.datiCarceri.get(hexId);
+                this.stato.testo = datiCarcere ? datiCarcere.carcere : "";
+                this.esagonoCliccato = esagonoSelezionato;
+                this.testoCompletato = false;
+                this.indiceCarattereCorrente = 0;
+            }
+
+            if (!this.testoCompletato) {
+                if (this.indiceCarattereCorrente < this.stato.testo.length) {
+                    this.indiceCarattereCorrente++;
+                    this.testoCorrente = this.stato.testo.substring(0, this.indiceCarattereCorrente);
+                } else {
+                    this.testoCompletato = true;
+                }
+            }
+            
+            return this.testoCompletato ? this.stato.testo : this.testoCorrente;
         }
 
-        if (esagonoSelezionato.scaleMultiplier > 1.5) {
-            this.esagonoCliccato = esagonoSelezionato;
+        if (this.esagonoCliccato) {
+            this.esagonoCliccato = null;
+            this.ultimoEsagonoSelezionato = null;
+            this.nuovoTestoInAttesa = null;
+            this.testoCompletato = false;
+            this.indiceCarattereCorrente = 0;
+            return this.aggiornaTesto("");
+        }
+
+        if (!this.esagonoCliccato && esagonoSelezionato?.scaleMultiplier <= 1.5) {
             const regioneNormalizzata = regioneSelezionata.replace(/ /g, '_').replace(/'/g, '_');
             const hexId = `${regioneNormalizzata}_hex_${esagonoSelezionato.id}`;
             const datiCarcere = this.datiCarceri.get(hexId);
-            this.stato.testo = datiCarcere ? datiCarcere.carcere : "";
-            return this.stato.testo;
-        }
+            const nuovoTesto = datiCarcere ? datiCarcere.carcere : "";
 
-        this.esagonoCliccato = null;
-        const regioneNormalizzata = regioneSelezionata.replace(/ /g, '_').replace(/'/g, '_');
-        const hexId = `${regioneNormalizzata}_hex_${esagonoSelezionato.id}`;
-        const datiCarcere = this.datiCarceri.get(hexId);
-        const nuovoTesto = datiCarcere ? datiCarcere.carcere : "";
-
-        if (esagonoSelezionato !== this.stato.precedente) {
-            if (this.stato.testo !== "" && nuovoTesto !== this.stato.testo) {
-                this.stato.inCancellazione = true;
+            if (nuovoTesto !== this.stato.testo) {
+                if (this.testoCorrente !== "") {
+                    this.stato.inCancellazione = true;
+                    this.nuovoTestoInAttesa = nuovoTesto;
+                    return this.cancellaTesto();
+                }
+                this.stato.testo = nuovoTesto;
+                this.testoCompletato = false;
+                this.indiceCarattereCorrente = 0;
             }
-            this.stato.precedente = esagonoSelezionato;
-            this.stato.testo = nuovoTesto;
+
+            if (!this.testoCompletato) {
+                if (this.indiceCarattereCorrente < this.stato.testo.length) {
+                    this.indiceCarattereCorrente++;
+                    this.testoCorrente = this.stato.testo.substring(0, this.indiceCarattereCorrente);
+                    return this.testoCorrente;
+                } else {
+                    this.testoCompletato = true;
+                }
+            }
         }
 
-        return this.aggiornaTesto(this.stato.testo);
+        return this.testoCompletato ? this.stato.testo : this.testoCorrente;
     }
 
     reset() {
         super.reset();
+        this.testoCompletato = false;
+        this.indiceCarattereCorrente = 0;
         this.esagonoCliccato = null;
+        this.ultimoEsagonoSelezionato = null;
+        this.nuovoTestoInAttesa = null;
     }
 }
 
@@ -257,10 +302,10 @@ class GestoreTestoSovraffollamento extends GestoreTestoBase {
         return [
             this.TESTI.TASSO_AFFOLLAMENTO,
             `${tasso}${this.TESTI.UNITA_PERCENTUALE}`,
-            this.TESTI.PERSONE_STANZA,
-            `${persone}`,
             this.TESTI.SPAZIO_PERSONA,
-            `${spazio} ${this.TESTI.UNITA_SPAZIO}`
+            `${spazio} ${this.TESTI.UNITA_SPAZIO}`,
+            this.TESTI.PERSONE_STANZA,
+            `${persone}`
         ].join('\n');
     }
 
