@@ -20,7 +20,7 @@ const TESTO_CREDITI = "Dati elaborati a partire dalle Schede di Trasparenza degl
 
 function preload() {
   try {
-    tabella = loadTable('database/coordinate_dacompletare.csv', 'csv', 'header');
+    tabella = loadTable('coordinate_dacompletare.csv', 'csv', 'header');
     fontLegenda = loadFont('FONT/AeionMono-SemiBold.ttf');
     fontTitolo = loadFont('FONT/AeionMono-Bold.ttf');
   } catch (error) {
