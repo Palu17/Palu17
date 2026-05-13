@@ -1,0 +1,40 @@
+:root {
+  --btn-font-sm: clamp(14px, 1.3vw, 18px);
+  --btn-font-md: clamp(16px, 1.5vw, 20px);
+  --btn-font-lg: clamp(18px, 1.8vw, 24px);
+  --btn-pad-sm: clamp(10px, 1.2vw, 14px) clamp(28px, 3.5vw, 44px);
+  --btn-pad-md: clamp(12px, 1.5vw, 16px) clamp(32px, 4vw, 48px);
+  --btn-pad-lg: clamp(16px, 1.8vw, 20px) clamp(40px, 4.5vw, 56px);
+}
+
+.btn {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: white;
+}
+
+.btn-medium {
+  padding: var(--btn-pad-md);
+  font-size: var(--btn-font-md);
+}
+
+.btn-small {
+  padding: var(--btn-pad-sm);
+  font-size: var(--btn-font-sm);
+}
+
+.btn-large {
+  padding: var(--btn-pad-lg);
+  font-size: var(--btn-font-lg);
+}

@@ -1,5 +1,6 @@
-class GestoreCella {
-    constructor() {
+export class GestoreCella {
+    constructor(p) {
+        this.p = p;
         this.x = 0;
         this.y = 0;
         this.targetX = 0;
@@ -9,9 +10,9 @@ class GestoreCella {
 
     aggiornaSovraffollamento(valore, size) {
         if (valore > 100) {
-            let spostamento = map(valore, 100, 200, 0, size * 0.5);
-            this.targetX = spostamento * cos(2 * PI / 3);
-            this.targetY = -spostamento * sin(2 * PI / 3);
+            let spostamento = this.p.map(valore, 100, 200, 0, size * 0.5);
+            this.targetX = spostamento * this.p.cos((2 * this.p.PI) / 3);
+            this.targetY = -spostamento * this.p.sin((2 * this.p.PI) / 3);
         } else {
             this.targetX = 0;
             this.targetY = 0;

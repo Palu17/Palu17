@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: black;
+  color: white;
+  font-family: "Geist Mono", monospace;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.intro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  padding: 40px;
+}
+
+@media (max-width: 768px) {
+  .intro-container {
+    padding: 20px;
+  }
+}

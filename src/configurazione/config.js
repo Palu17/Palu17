@@ -1,4 +1,4 @@
-const CONFIGURAZIONE = {
+export const CONFIGURAZIONE = {
     colori: {
       sfondo: "black",
       esagonoBase: "white",
@@ -65,4 +65,12 @@ const CONFIGURAZIONE = {
             riga2: "Di queste, 153 sono sovraffollate."
         }
     }
-}; 
+};
+
+export const ASSETS = {
+    dataset: new URL("../../datasetcarceri.csv", import.meta.url).href,
+    fontTitolo: new URL("../../FONT/GeistMono-Bold.ttf", import.meta.url).href,
+    fontLegenda: new URL("../../FONT/GeistMono-SemiBold.ttf", import.meta.url).href,
+    fontIntro: new URL("../../FONT/GeistMono-Bold.ttf", import.meta.url).href,
+    svgCella: new URL("../../svg/cella.svg", import.meta.url).href
+};

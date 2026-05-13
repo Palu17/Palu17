@@ -1,5 +1,8 @@
-class GestoreAnimazioni {
-    constructor() {
+import { CONFIGURAZIONE } from "../configurazione/config.js";
+
+export class GestoreAnimazioni {
+    constructor(p) {
+        this.p = p;
         const config = CONFIGURAZIONE.animazioni;
         this.VELOCITA_ANIMAZIONE = config.velocita.base;
         this.VELOCITA_ANIMAZIONE_TESTO = config.velocita.testo;
@@ -30,7 +33,7 @@ class GestoreAnimazioni {
             let t = (nextScale - esagono.currentScale) / (esagono.targetScale - esagono.currentScale);
             t = this.easeInOutCubic(t);
             
-            esagono.currentScale = lerp(esagono.currentScale, esagono.targetScale, t);
+            esagono.currentScale = this.p.lerp(esagono.currentScale, esagono.targetScale, t);
         }
     }
 
@@ -51,7 +54,7 @@ class GestoreAnimazioni {
     }
 
     animaTesto(testoCorrente, testoTarget) {
-        const tempoCorrente = millis();
+        const tempoCorrente = this.p.millis();
         
         if (testoCorrente.length < testoTarget.length) {
             if (tempoCorrente - this.ultimoCarattereAggiunto > this.VELOCITA_TESTO) {
@@ -63,22 +66,22 @@ class GestoreAnimazioni {
     }
 
     animaOpacita(opacitaCorrente, opacitaTarget, velocita = 0.1) {
-        return lerp(opacitaCorrente, opacitaTarget, velocita);
+        return this.p.lerp(opacitaCorrente, opacitaTarget, velocita);
     }
 
     animaScalaConDurata(scalaCorrente, scalaTarget, tempoInizio, durata) {
-        const tempoTrascorso = millis() - tempoInizio;
+        const tempoTrascorso = this.p.millis() - tempoInizio;
         const progresso = Math.min(tempoTrascorso / durata, 1);
         const easeProgresso = this.easeInOutCubic(progresso);
         
-        return lerp(scalaCorrente, scalaTarget, easeProgresso);
+        return this.p.lerp(scalaCorrente, scalaTarget, easeProgresso);
     }
 
     gestisciTransizione(valoreCorrente, valoreTarget, durata, tempoInizio) {
-        const tempoTrascorso = millis() - tempoInizio;
+        const tempoTrascorso = this.p.millis() - tempoInizio;
         const progresso = Math.min(tempoTrascorso / durata, 1);
         return {
-            valore: lerp(valoreCorrente, valoreTarget, this.easeInOutCubic(progresso)),
+            valore: this.p.lerp(valoreCorrente, valoreTarget, this.easeInOutCubic(progresso)),
             completata: progresso >= 1
         };
     }

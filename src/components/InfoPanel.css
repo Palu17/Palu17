@@ -1,0 +1,94 @@
+.info-panel {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 30px;
+  pointer-events: none;
+}
+
+.info-content {
+  width: 100%;
+}
+
+.info-regione-nome {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.info-regione-desc {
+  font-size: 16px;
+  color: #c0c0c0;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.info-carcere {
+  margin-top: 60px;
+}
+
+.info-carcere-nome {
+  font-size: 24px;
+  color: #c0c0c0;
+  margin: 0;
+}
+
+.info-stats {
+  margin-top: 20px;
+}
+
+.info-stat {
+  margin-bottom: 24px;
+}
+
+.info-stat-label {
+  display: block;
+  font-size: 20px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.info-stat-value {
+  display: block;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .info-panel {
+    padding: 20px 15px;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .info-regione-nome {
+    font-size: 24px;
+  }
+
+  .info-regione-desc {
+    font-size: 12px;
+  }
+
+  .info-carcere {
+    margin-top: 30px;
+  }
+
+  .info-carcere-nome {
+    font-size: 18px;
+  }
+
+  .info-stat-label {
+    font-size: 14px;
+  }
+
+  .info-stat-value {
+    font-size: 36px;
+  }
+
+  .info-stat {
+    margin-bottom: 16px;
+  }
+}

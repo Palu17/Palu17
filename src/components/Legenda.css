@@ -1,0 +1,71 @@
+.legenda {
+  padding: 30px 20px;
+  pointer-events: none;
+}
+
+.legenda-riga {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 6px 0;
+  opacity: 0.9;
+}
+
+.legenda-comune {
+  margin-bottom: 16px;
+}
+
+.legenda-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legenda-hex {
+  width: 12px;
+  height: 10.4px;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  flex-shrink: 0;
+}
+
+.legenda-hex.rosso {
+  background: rgb(230, 50, 50);
+}
+
+.legenda-hex.bianco {
+  background: white;
+}
+
+.legenda-label {
+  font-size: 14px;
+  color: #ccc;
+}
+
+@media (max-width: 768px) {
+  .legenda {
+    padding: 10px 15px;
+  }
+
+  .legenda-riga {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .legenda-comune {
+    display: none;
+  }
+
+  .legenda-label {
+    font-size: 11px;
+  }
+
+  .legenda-hex {
+    width: 10px;
+    height: 8.7px;
+  }
+}

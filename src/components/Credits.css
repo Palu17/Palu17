@@ -1,0 +1,70 @@
+.credits {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.credits-trigger {
+  background: none;
+  border: none;
+  color: white;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 0;
+  border-bottom: 1px solid white;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.credits-trigger:hover {
+  opacity: 1;
+}
+
+.credits.expanded {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.credits-text {
+  font-size: 11px;
+  color: #ccc;
+  cursor: pointer;
+  max-width: 300px;
+  text-align: right;
+  line-height: 1.3;
+}
+
+.credits-text:hover {
+  color: white;
+}
+
+.credits-close {
+  background: none;
+  border: 1px solid #666;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.credits-close:hover {
+  border-color: white;
+}
+
+@media (max-width: 768px) {
+  .credits-text {
+    font-size: 10px;
+    max-width: 200px;
+  }
+}

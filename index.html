@@ -1,30 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="it">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <title>Chiusi Dentro</title>
-
-    <link rel="stylesheet" type="text/css" href="./style.css">
-
-    <script src="libraries/p5.min.js"></script>
-    <script src="libraries/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      @font-face {
+        font-family: 'Geist Mono';
+        src: url('/FONT/GeistMono-Bold.ttf') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Geist Mono';
+        src: url('/FONT/GeistMono-SemiBold.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
   </head>
-
   <body>
-    <script src="./src/configurazione/config.js"></script>
-    <script src="./src/modelli/Esagono.js"></script>
-    <script src="./src/gestori/GestoreAnimazioni.js"></script>
-    <script src="./src/gestori/GestoreEsagoni.js"></script>
-    <script src="./src/gestori/GestoreIntro.js"></script>
-    <script src="./src/gestori/GestoreMappa.js"></script>
-    <script src="./src/gestori/GestoreSvg.js"></script>
-    <script src="./src/gestori/GestoreTesto.js"></script>
-    <script src="./src/gestori/GestoreCella.js"></script>
-    <script src="./src/modelli/Legenda.js"></script>
-    <script src="./src/interfaces/DatiCarcere.js"></script>
-    <script src="./sketch.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

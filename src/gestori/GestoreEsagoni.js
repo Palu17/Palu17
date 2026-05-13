@@ -1,14 +1,18 @@
-class GestoreEsagoni {
-    constructor(gestoreMappa) {
+import { CONFIGURAZIONE } from "../configurazione/config.js";
+import { GestoreCella } from "./GestoreCella.js";
+
+export class GestoreEsagoni {
+    constructor(gestoreMappa, p) {
         this.gestoreMappa = gestoreMappa;
+        this.p = p;
         this.esagonoIngrandito = null;
-        
+
         const config = CONFIGURAZIONE;
-        this.OFFSET_ITALIA_X = -width * config.layout.offset.italia.x;
-        this.OFFSET_REGIONE_X = width * config.layout.offset.regione.x;
+        this.OFFSET_ITALIA_X = -p.width * config.layout.offset.italia.x;
+        this.OFFSET_REGIONE_X = p.width * config.layout.offset.regione.x;
         this.DURATA_ANIMAZIONE = config.animazioni.durata.transizione;
         this.DURATA_INGRANDIMENTO = config.animazioni.durata.ingrandimento;
-        
+
         this.SCALA = {
             PICCOLA: config.layout.scala.piccola,
             PIU_PICCOLA: config.layout.scala.piuPiccola,
@@ -16,12 +20,12 @@ class GestoreEsagoni {
             GRANDE: config.layout.scala.grande,
             PUNTO: config.layout.scala.punto
         };
-        
+
         this.tempoInizioAnimazione = 0;
         this.inIngrandimento = false;
         this.inRiduzione = false;
         this.tempoInizioRiduzione = 0;
-        this.gestoreCella = new GestoreCella();
+        this.gestoreCella = new GestoreCella(p);
         this.sovraffollamentoCorrente = 0;
         this.posizioniOriginali = new Map();
     }
@@ -52,15 +56,15 @@ class GestoreEsagoni {
         };
     }
 
-    spostaEsagoniItalia(scala = this.SCALA.PICCOLA, offsetX = width * 0.1) {
+    spostaEsagoniItalia(scala = this.SCALA.PICCOLA, offsetX) {
         const esagoniItalia = this.gestoreMappa.esagoni.filter(e => 
             e.regione !== this.gestoreMappa.regioneSelezionata
         );
 
         esagoniItalia.forEach(hex => {
             this.inizializzaPosizioniOriginali(hex);
-            hex.targetX = hex.originalX * 0.3 + width * -0.01;
-            hex.targetY = hex.originalY * 0.3 + height * 0.35;
+            hex.targetX = hex.originalX * 0.3 + this.p.width * -0.01;
+            hex.targetY = hex.originalY * 0.3 + this.p.height * 0.35;
             hex.targetScale = 0.3;
         });
     }
@@ -70,7 +74,7 @@ class GestoreEsagoni {
             const offsetXFromCenter = hex.originalX - centro.x;
             const offsetYFromCenter = hex.originalY - centro.y;
             hex.targetX = offsetX + offsetXFromCenter * scala;
-            hex.targetY = height * 0.5 + offsetYFromCenter * scala;
+            hex.targetY = this.p.height * 0.5 + offsetYFromCenter * scala;
             hex.targetScale = scala;
             
             if (hex.dot) {
@@ -92,11 +96,11 @@ class GestoreEsagoni {
         if (this.esagonoIngrandito) {
             const esagonoIngrandito = this.esagonoIngrandito;
             this.inRiduzione = true;
-            this.tempoInizioRiduzione = millis();
+            this.tempoInizioRiduzione = this.p.millis();
             esagonoIngrandito.targetScale = this.SCALA.NORMALE;
             esagonoIngrandito.disattivaAnimazione();
             
-            gestoreSvg.impostaOpacita(0);
+            this.gestoreMappa.gestoreSvg?.impostaOpacita(0);
             
             setTimeout(() => {
                 this.inRiduzione = false;
@@ -106,42 +110,40 @@ class GestoreEsagoni {
                 regioneEsagoni.forEach(hex => {
                     const offsetX = hex.originalX - centro.x;
                     const offsetY = hex.originalY - centro.y;
-                    hex.targetX = width * 0.5 + offsetX * 1.5;
-                    hex.targetY = height * 0.5 + offsetY * 1.5;
+                    hex.targetX = this.p.width * 0.5 + offsetX * 1.5;
+                    hex.targetY = this.p.height * 0.5 + offsetY * 1.5;
                     hex.targetScale = 1.5;
                 });
 
-                this.spostaEsagoniItalia(this.SCALA.PICCOLA, width * 0.1);
+                this.spostaEsagoniItalia(this.SCALA.PICCOLA);
                 this.gestoreCella.aggiornaSovraffollamento(0, 0);
             }, this.DURATA_INGRANDIMENTO);
-
-            this.gestoreTesto.setCarceraRimpicciolito(true);
         } else {
             regioneEsagoni.forEach(hex => {
                 this.inizializzaPosizioniOriginali(hex);
                 if (hex === esagonoCliccato) {
-                    hex.targetX = width * 0.5;
-                    hex.targetY = height * 0.5;
+                    hex.targetX = this.p.width * 0.5;
+                    hex.targetY = this.p.height * 0.5;
                     hex.targetScale = 1.5;
                     this.esagonoIngrandito = hex;
-                    this.tempoInizioAnimazione = millis();
+                    this.tempoInizioAnimazione = this.p.millis();
                     
-                    gestoreSvg.impostaOpacita(0);
+                    this.gestoreMappa.gestoreSvg?.impostaOpacita(0);
                     
                     setTimeout(() => {
                         if (this.esagonoIngrandito === hex) {
                             hex.targetScale = this.SCALA.GRANDE;
                             this.inIngrandimento = true;
-                            this.tempoInizioIngrandimento = millis();
-                            gestoreSvg.impostaOpacita(1);
+                            this.tempoInizioIngrandimento = this.p.millis();
+                            this.gestoreMappa.gestoreSvg?.impostaOpacita(1);
                             hex.attivaAnimazione();
                         }
                     }, 500);
                 } else {
                     const offsetXFromCenter = hex.originalX - centro.x;
                     const offsetYFromCenter = hex.originalY - centro.y;
-                    hex.targetX = width * 0.15 + offsetXFromCenter * this.SCALA.PIU_PICCOLA;
-                    hex.targetY = height * 0.5 + offsetYFromCenter * this.SCALA.PIU_PICCOLA;
+                    hex.targetX = this.p.width * 0.15 + offsetXFromCenter * this.SCALA.PIU_PICCOLA;
+                    hex.targetY = this.p.height * 0.5 + offsetYFromCenter * this.SCALA.PIU_PICCOLA;
                     hex.targetScale = this.SCALA.PIU_PICCOLA;
                 }
             });
@@ -152,12 +154,10 @@ class GestoreEsagoni {
             
             esagoniItalia.forEach(hex => {
                 this.inizializzaPosizioniOriginali(hex);
-                hex.targetX = hex.originalX * 0.3 + width * -0.25;
-                hex.targetY = hex.originalY * 0.3 + height * 0.35;
+                hex.targetX = hex.originalX * 0.3 + this.p.width * -0.25;
+                hex.targetY = hex.originalY * 0.3 + this.p.height * 0.35;
                 hex.targetScale = 0.3;
             });
-
-            this.gestoreTesto.setCarceraRimpicciolito(false);
         }
     }
 
@@ -188,11 +188,11 @@ class GestoreEsagoni {
 
     aggiornaIngrandimento() {
         if (this.inIngrandimento && this.esagonoIngrandito) {
-            const tempoTrascorso = millis() - this.tempoInizioIngrandimento;
+            const tempoTrascorso = this.p.millis() - this.tempoInizioIngrandimento;
             const progresso = Math.min(tempoTrascorso / this.DURATA_INGRANDIMENTO, 1);
             const easeProgresso = this.easeInOutCubic(progresso);
 
-            this.esagonoIngrandito.scaleMultiplier = lerp(
+            this.esagonoIngrandito.scaleMultiplier = this.p.lerp(
                 this.esagonoIngrandito.scaleMultiplier,
                 this.esagonoIngrandito.targetScale,
                 easeProgresso
@@ -204,11 +204,11 @@ class GestoreEsagoni {
         }
         
         if (this.inRiduzione && this.esagonoIngrandito) {
-            const tempoTrascorso = millis() - this.tempoInizioRiduzione;
+            const tempoTrascorso = this.p.millis() - this.tempoInizioRiduzione;
             const progresso = Math.min(tempoTrascorso / this.DURATA_INGRANDIMENTO, 1);
             const easeProgresso = this.easeInOutCubic(progresso);
 
-            this.esagonoIngrandito.scaleMultiplier = lerp(
+            this.esagonoIngrandito.scaleMultiplier = this.p.lerp(
                 this.esagonoIngrandito.scaleMultiplier,
                 this.SCALA.NORMALE,
                 easeProgresso

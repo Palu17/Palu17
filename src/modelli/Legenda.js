@@ -1,5 +1,8 @@
-class Legenda {
-    constructor(font) {
+import { Esagono } from "../modelli/Esagono.js";
+
+export class Legenda {
+    constructor(font, p) {
+        this.p = p;
         this.testoComune = [
             "",
             "Il colore degli esagoni indica",
@@ -32,17 +35,7 @@ class Legenda {
         this.ultimoAggiornamento = 0;
         this.font = font;
         this.altezzaRiga = 20;
-        this.esagoni = [
-            new Esagono(width / 13 + 15, height - 150, 15, "regione1", color("red"), "1"),
-            new Esagono(width / 13 + 15, height - 100, 15, "regione2", color("white"), "2")
-        ];
-        
-        this.esagoni[1].sovraffollamento = 150;
-        this.esagoni[1].attivaAnimazione();
-
-        this.esagoni.forEach(esagono => {
-            esagono.hoverState = 1;
-        });
+        this.esagoni = [];
 
         this.opacitaPrimoEsagono = 0;
         this.opacitaSecondoEsagono = 0;
@@ -53,66 +46,96 @@ class Legenda {
         this.animazionePartita = false;
     }
 
+    initEsagoni() {
+        const isMobile = this.p.width < 768;
+        const raggioEsagono = isMobile ? 10 : 15;
+        const baseX = this.p.width / (isMobile ? 8 : 13);
+        const yBase = this.p.height - (isMobile ? 200 : 150);
+        const yBase2 = this.p.height - (isMobile ? 160 : 100);
+        
+        this.esagoni = [
+            new Esagono(baseX, yBase, raggioEsagono, "regione1", this.p.color("red"), "1", this.p),
+            new Esagono(baseX, yBase2, raggioEsagono, "regione2", this.p.color("white"), "2", this.p)
+        ];
+        
+        this.esagoni[1].sovraffollamento = 150;
+        this.esagoni[1].attivaAnimazione();
+
+        this.esagoni.forEach(esagono => {
+            esagono.hoverState = 1;
+        });
+    }
+
     disegna() {
-        push();
-        fill(255);
-        noStroke();
-        textFont(this.font);
-        textSize(16);
-        textAlign(LEFT, CENTER);
+        if (this.esagoni.length === 0) {
+            this.initEsagoni();
+        }
+
+        const isMobile = this.p.width < 768;
+        const baseX = this.p.width / (isMobile ? 8 : 13);
+        const yBase = this.p.height - (isMobile ? 200 : 150);
+        const yBase2 = this.p.height - (isMobile ? 160 : 100);
+        const altezzaRiga = isMobile ? 16 : 20;
+
+        this.p.push();
+        this.p.fill(255);
+        this.p.noStroke();
+        this.p.textFont(this.font);
+        this.p.textSize(isMobile ? 12 : 16);
+        this.p.textAlign(this.p.LEFT, this.p.CENTER);
 
         for (let i = 0; i < this.testoCorrente.length; i++) {
-            text(this.testoCorrente[i], width / 13, height - 270 + (i - 4) * this.altezzaRiga);
+            this.p.text(this.testoCorrente[i], baseX, yBase - 120 + (i - 4) * altezzaRiga);
         }
 
         if (this.rigaCorrente >= this.testo.length) {
             if (!this.animazionePartita) {
-                this.inizioAnimazione = millis();
+                this.inizioAnimazione = this.p.millis();
                 this.animazionePartita = true;
             }
 
-            let tempoTrascorso = millis() - this.inizioAnimazione;
+            let tempoTrascorso = this.p.millis() - this.inizioAnimazione;
             
-            this.opacitaPrimoEsagono = min(255, map(tempoTrascorso, 0, this.durataFadeIn, 0, 255));
+            this.opacitaPrimoEsagono = this.p.min(255, this.p.map(tempoTrascorso, 0, this.durataFadeIn, 0, 255));
             
             if (tempoTrascorso > this.durataFadeIn) {
                 let tempoLinea = tempoTrascorso - this.durataFadeIn;
-                this.lunghezzaLinea = min(50, map(tempoLinea, 0, this.durataLinea, 0, 50));
+                this.lunghezzaLinea = this.p.min(50, this.p.map(tempoLinea, 0, this.durataLinea, 0, 50));
                 
                 if (tempoLinea > this.durataLinea/2) {
-                    this.opacitaSecondoEsagono = min(255, map(tempoLinea - this.durataLinea/2, 0, this.durataFadeIn, 0, 255));
+                    this.opacitaSecondoEsagono = this.p.min(255, this.p.map(tempoLinea - this.durataLinea/2, 0, this.durataFadeIn, 0, 255));
                 }
             }
 
             if (this.lunghezzaLinea > 0) {
-                stroke(255);
-                strokeWeight(3);
-                line(width / 13 + 15, height - 150, width / 13 + 15, height - 150 + this.lunghezzaLinea);
-                noStroke();
+                this.p.stroke(255);
+                this.p.strokeWeight(isMobile ? 2 : 3);
+                this.p.line(baseX, yBase, baseX, yBase + this.lunghezzaLinea);
+                this.p.noStroke();
             }
 
             if (this.opacitaPrimoEsagono > 0) {
-                this.esagoni[0].x = width / 13 + 15;
-                this.esagoni[0].y = height - 150;
+                this.esagoni[0].x = baseX;
+                this.esagoni[0].y = yBase;
                 this.esagoni[0].opacita = this.opacitaPrimoEsagono;
                 this.esagoni[0].disegna();
-                fill(255);
-                text(this.testoEsagoniCorrente[0], width / 13 + 45, height - 152);
+                this.p.fill(255);
+                this.p.text(this.testoEsagoniCorrente[0], baseX + (isMobile ? 25 : 30), yBase - 2);
             }
             
             if (this.opacitaSecondoEsagono > 0) {
-                this.esagoni[1].x = width / 13 + 15;
-                this.esagoni[1].y = height - 100;
+                this.esagoni[1].x = baseX;
+                this.esagoni[1].y = yBase2;
                 this.esagoni[1].opacita = this.opacitaSecondoEsagono;
                 this.esagoni[1].disegna();
-                fill(255);
-                text(this.testoEsagoniCorrente[1], width / 13 + 45, height - 102);
+                this.p.fill(255);
+                this.p.text(this.testoEsagoniCorrente[1], baseX + (isMobile ? 25 : 30), yBase2 - 2);
             }
         }
         
-        pop();
+        this.p.pop();
 
-        if (millis() - this.ultimoAggiornamento > this.velocitaScrittura) {
+        if (this.p.millis() - this.ultimoAggiornamento > this.velocitaScrittura) {
             if (this.rigaCorrente < this.testo.length) {
                 if (this.indice === 0) {
                     this.testoCorrente.push("");
@@ -125,11 +148,11 @@ class Legenda {
                     this.rigaCorrente++;
                     this.indice = 0;
                 }
-                this.ultimoAggiornamento = millis();
+                this.ultimoAggiornamento = this.p.millis();
             }
             else if (this.rigaEsagoniCorrente < this.testoEsagoni.length) {
                 if (this.rigaEsagoniCorrente === 1 && 
-                    millis() - this.inizioAnimazione <= this.durataFadeIn + this.durataLinea/2) {
+                    this.p.millis() - this.inizioAnimazione <= this.durataFadeIn + this.durataLinea/2) {
                     return;
                 }
                 
@@ -141,7 +164,7 @@ class Legenda {
                     this.rigaEsagoniCorrente++;
                     this.indiceEsagoni = 0;
                 }
-                this.ultimoAggiornamento = millis();
+                this.ultimoAggiornamento = this.p.millis();
             }
         }
     }

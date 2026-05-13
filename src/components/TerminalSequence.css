@@ -1,0 +1,71 @@
+:root {
+  --ts-font: clamp(18px, 3.5vw, 40px);
+  --ts-gap: clamp(24px, 3.5vw, 48px);
+  --ts-line-gap: clamp(12px, 2vw, 28px);
+  --ts-cursor-w: clamp(8px, 1.2vw, 16px);
+  --ts-container-w: min(85vw, 1100px);
+  --ts-prompt-x: clamp(-10px, -0.8vw, -8px);
+}
+
+.ts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ts-gap);
+  max-width: var(--ts-container-w);
+  width: 100%;
+}
+
+.ts-line {
+  display: flex;
+  align-items: center;
+  gap: var(--ts-line-gap);
+}
+
+.ts-line--secondary {
+  opacity: 0.85;
+}
+
+.ts-prompt {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: var(--ts-font);
+  flex-shrink: 0;
+}
+
+.ts-prompt--in {
+  animation: promptIn 0.4s ease-out;
+}
+
+.ts-text {
+  font-size: var(--ts-font);
+  letter-spacing: 0.5px;
+  word-break: break-word;
+}
+
+.ts-cursor {
+  display: inline-block;
+  width: var(--ts-cursor-w);
+  height: 1.2em;
+}
+
+.ts-cursor--blink {
+  background: white;
+  animation: blink 0.5s step-end infinite;
+}
+
+.ts-cursor--off {
+  background: transparent;
+}
+
+.ts-cursor--solid {
+  background: white;
+  animation: none;
+}
+
+@keyframes blink {
+  50% { background: transparent; }
+}
+
+@keyframes promptIn {
+  0% { opacity: 0; transform: translateX(var(--ts-prompt-x)); }
+  100% { opacity: 1; transform: translateX(0); }
+}

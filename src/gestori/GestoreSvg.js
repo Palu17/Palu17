@@ -1,5 +1,8 @@
-class GestoreSvg {
-    constructor() {
+import { CONFIGURAZIONE, ASSETS } from "../configurazione/config.js";
+
+export class GestoreSvg {
+    constructor(p) {
+        this.p = p;
         this.svg = null;
         this.isLoaded = false;
         this.opacita = 0;
@@ -10,10 +13,11 @@ class GestoreSvg {
     }
 
     caricaSVG() {
-        const percorsoSVG = 'svg/cella.svg';
+        const percorsoSVG = ASSETS.svgCella;
         console.log('Tentativo di caricamento SVG:', percorsoSVG);
         
-        loadImage(percorsoSVG, 
+        this.p.loadImage(
+            percorsoSVG,
             (img) => {
                 if (img.width === 0 || img.height === 0) {
                     console.warn('SVG caricato ma invalido, riprovo...');
@@ -42,7 +46,11 @@ class GestoreSvg {
     }
 
     aggiornaOpacita() {
-        this.opacita = lerp(this.opacita, this.targetOpacita, CONFIGURAZIONE.animazioni.easing);
+        this.opacita = this.p.lerp(
+            this.opacita,
+            this.targetOpacita,
+            CONFIGURAZIONE.animazioni.easing
+        );
     }
 
     visualizza(esagonoIngrandito) {
@@ -53,8 +61,8 @@ class GestoreSvg {
         try {
             this.aggiornaOpacita();
             
-            push();
-            tint(255, this.opacita * 255);
+            this.p.push();
+            this.p.tint(255, this.opacita * 255);
             
             const config = CONFIGURAZIONE.svg.proporzioni;
             let svgWidth = esagonoIngrandito.raggio * esagonoIngrandito.scaleMultiplier * config.larghezza;
@@ -62,10 +70,12 @@ class GestoreSvg {
             let svgX = esagonoIngrandito.x - svgWidth / 2;
             let svgY = esagonoIngrandito.y - svgHeight / 2;
             
-            image(this.svg, svgX, svgY, svgWidth, svgHeight);
-            pop();
+            this.p.image(this.svg, svgX, svgY, svgWidth, svgHeight);
+            this.p.pop();
         } catch (error) {
             console.error('Errore nel disegno dell\'SVG:', error);
         }
     }
+
+    ridimensiona() {}
 } 
