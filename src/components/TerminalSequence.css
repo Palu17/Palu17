@@ -1,6 +1,8 @@
 :root {
   --ts-font: clamp(18px, 3.5vw, 40px);
-  --ts-gap: clamp(24px, 3.5vw, 48px);
+  --ts-font-md: clamp(16px, 2.5vw, 32px);
+  --ts-font-sm: clamp(14px, 1.8vw, 24px);
+  --ts-gap: clamp(12px, 2vw, 24px);
   --ts-line-gap: clamp(12px, 2vw, 28px);
   --ts-cursor-w: clamp(8px, 1.2vw, 16px);
   --ts-container-w: min(85vw, 1100px);
@@ -39,6 +41,14 @@
   font-size: var(--ts-font);
   letter-spacing: 0.5px;
   word-break: break-word;
+}
+
+.ts-text--medium {
+  font-size: var(--ts-font-md);
+}
+
+.ts-text--small {
+  font-size: var(--ts-font-sm);
 }
 
 .ts-cursor {

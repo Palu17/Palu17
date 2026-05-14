@@ -445,14 +445,17 @@ export class GestoreMappa {
   }
 
   disegna() {
+    if (!this.hoverAttivo || (!this.regioneHover && !this.cellaHover)) {
+      for (let esagono of this.esagoni) esagono.disegna();
+      return;
+    }
     for (let esagono of this.esagoni) {
-      if ((esagono.regione !== this.regioneHover && esagono !== this.cellaHover) || !this.hoverAttivo) {
+      if (esagono.regione !== this.regioneHover && esagono !== this.cellaHover) {
         esagono.disegna();
       }
     }
-
     for (let esagono of this.esagoni) {
-      if ((esagono.regione === this.regioneHover || esagono === this.cellaHover) && this.hoverAttivo) {
+      if (esagono.regione === this.regioneHover || esagono === this.cellaHover) {
         esagono.disegna();
       }
     }

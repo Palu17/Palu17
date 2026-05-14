@@ -100,7 +100,7 @@ export default function TerminalSequence({ steps }) {
 
           {step.type === "text" && (
             <>
-              <span className="ts-text">{texts[i] || ""}</span>
+              <span className={`ts-text${step.variant ? ` ts-text--${step.variant}` : ""}`}>{texts[i] || ""}</span>
               {activeIdx === i && stepState[i] === "typing" &&
                 (cursorOn ? (
                   <Cursor variant="blink" />

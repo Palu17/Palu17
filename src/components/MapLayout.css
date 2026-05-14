@@ -30,23 +30,8 @@
   top: 0;
   left: 0;
   width: 100%;
-  text-align: center;
-  padding-top: 4vh;
+  padding: 4vh 40px 0;
   z-index: 5;
-}
-
-.map-title {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: 1px;
-}
-
-.map-subtitle {
-  font-size: 26px;
-  margin: 8px 0 0 0;
-  opacity: 0.9;
-  font-weight: 400;
 }
 
 .map-grid {
@@ -94,15 +79,6 @@
 }
 
 @media (max-width: 768px) {
-  .map-title {
-    font-size: 22px;
-  }
-
-  .map-subtitle {
-    font-size: 16px;
-    margin-top: 4px;
-  }
-
   .map-grid {
     grid-template-columns: 1fr 1.5fr;
     grid-template-rows: 1fr auto;

@@ -1,10 +1,34 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import CanvasScene from "./CanvasScene.jsx";
 import InfoPanel from "./InfoPanel.jsx";
 import Legenda from "./Legenda.jsx";
 import LegendCanvas from "./LegendCanvas.jsx";
 import Credits from "./Credits.jsx";
+import TerminalSequence from "./TerminalSequence";
 import "./MapLayout.css";
+
+function TitleSequence() {
+  const steps = useMemo(
+    () => [
+      {
+        type: "text",
+        content: "Chiusi Dentro",
+        pause: 2000,
+        speed: 80,
+      },
+      {
+        type: "text",
+        content: "il sovraffollamento delle carceri Italiane",
+        pause: 2000,
+        speed: 40,
+        variant: "small",
+      },
+    ],
+    []
+  );
+
+  return <TerminalSequence steps={steps} />;
+}
 
 export default function MapLayout() {
   const [mapData, setMapData] = useState(null);
@@ -17,8 +41,7 @@ export default function MapLayout() {
     <div className="map-layout">
       <div className="map-overlay">
         <header className="map-header">
-          <h1 className="map-title">Chiusi Dentro</h1>
-          <p className="map-subtitle">il sovraffollamento delle carceri Italiane</p>
+          <TitleSequence />
         </header>
         <div className="map-grid">
           <aside className="col col-left">
