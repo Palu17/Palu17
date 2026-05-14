@@ -2,7 +2,6 @@
   position: absolute;
   bottom: 20px;
   right: 20px;
-  pointer-events: auto;
   z-index: 10;
 }
 

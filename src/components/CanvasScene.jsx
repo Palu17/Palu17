@@ -16,5 +16,5 @@ export default function CanvasScene({ onDataChange }) {
     };
   }, []);
 
-  return <div ref={containerRef} />;
+  return <div ref={containerRef} className="canvas-layer" />;
 }

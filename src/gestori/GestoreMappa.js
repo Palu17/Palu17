@@ -12,7 +12,6 @@ const StatoMappa = {
 export class GestoreMappa {
   constructor(gestoreAnimazioni, legenda, p, gestoreSvg) {
     this.p = p;
-    this.legenda = legenda;
     this.gestoreSvg = gestoreSvg;
     this.esagoni = [];
     this.regioneHover = null;
@@ -274,9 +273,7 @@ export class GestoreMappa {
       if (this.gestoreEsagoni.esagonoIngrandito === esagono) {
         esagono.opacita = 255 * this.fadeInProgress;
       } else {
-        esagono.opacita =
-          (this.regioneSelezionata === esagono.regione ? 255 : 30) *
-          this.fadeInProgress;
+        esagono.opacita = 255 * this.fadeInProgress;
       }
       return;
     }
@@ -295,7 +292,7 @@ export class GestoreMappa {
       if (this.esagonoCliccato === esagono) {
         targetOpacita = 255;
       } else {
-        targetOpacita = esagono.regione === this.regioneSelezionata ? 255 : 30;
+        targetOpacita = 255;
       }
     } else if (this.regioneHover) {
       targetOpacita = esagono.regione === this.regioneHover ? 255 : 100;

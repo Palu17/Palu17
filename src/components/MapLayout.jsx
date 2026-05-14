@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import CanvasScene from "./CanvasScene.jsx";
 import InfoPanel from "./InfoPanel.jsx";
 import Legenda from "./Legenda.jsx";
+import LegendCanvas from "./LegendCanvas.jsx";
 import Credits from "./Credits.jsx";
 import "./MapLayout.css";
 
@@ -14,7 +15,6 @@ export default function MapLayout() {
 
   return (
     <div className="map-layout">
-      <CanvasScene onDataChange={handleDataChange} />
       <div className="map-overlay">
         <header className="map-header">
           <h1 className="map-title">Chiusi Dentro</h1>
@@ -23,6 +23,7 @@ export default function MapLayout() {
         <div className="map-grid">
           <aside className="col col-left">
             <Legenda />
+            <LegendCanvas />
           </aside>
           <div className="col col-center" />
           <aside className="col col-right">
@@ -31,6 +32,7 @@ export default function MapLayout() {
         </div>
         <Credits />
       </div>
+      <CanvasScene onDataChange={handleDataChange} />
     </div>
   );
 }
